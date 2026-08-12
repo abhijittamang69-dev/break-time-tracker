@@ -21,25 +21,30 @@ router.post('/login', [
     }
 
     const { username, password } = req.body;
+    console.log('[LOGIN] Attempting login for username:', username);
 
     const user = await User.findOne({ username });
     if (!user) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+      console.log('[LOGIN] User not found:', username);
+      return res.status(400).json({ message: 'Invalid credentials - user not found' });
     }
+
+    console.log('[LOGIN] User found:', user.username, '| isActive:', user.isActive);
 
     if (!user.isActive) {
       return res.status(400).json({ message: 'Account is deactivated' });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
+    console.log('[LOGIN] Password match:', isMatch);
     if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+      return res.status(400).json({ message: 'Invalid credentials - wrong password' });
     }
 
     const token = jwt.sign(
       { id: user._id },
       process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRE }
+      { expiresIn: process.env.JWT_EXPIRE || '7d' }
     );
 
     res.json({
@@ -75,6 +80,21 @@ router.get('/me', auth, async (req, res) => {
         maxBreakTime: req.user.maxBreakTime,
         maxBreaksPerShift: req.user.maxBreaksPerShift
       }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Debug endpoint - check if users exist in DB
+router.get('/debug', async (req, res) => {
+  try {
+    const count = await User.countDocuments();
+    const users = await User.find({}, 'username name designation isActive');
+    res.json({
+      totalUsers: count,
+      users: users
     });
   } catch (error) {
     console.error(error);
