@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://break-time-tracker.onrender.com/api';
 
 let currentUser = null;
 let authToken = localStorage.getItem('rmc_token');
