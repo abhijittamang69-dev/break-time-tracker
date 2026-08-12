@@ -47,12 +47,6 @@ router.post('/login', [
     }
 
     const token = jwt.sign(
-    console.log('[LOGIN] Password match:', isMatch);
-    if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid credentials - wrong password' });
-    }
-
-    const token = jwt.sign(
       { id: user._id },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRE || '7d' }
