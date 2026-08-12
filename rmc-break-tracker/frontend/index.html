@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RMC Break Time Tracker</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <!-- Login Screen -->
+  <div id="login-screen" class="screen active">
+    <div class="login-container">
+      <div class="login-card">
+        <div class="logo">
+          <i class="fas fa-qrcode"></i>
+          <h1>RMC Break Tracker</h1>
+          <p>QR Code Break Time Management System</p>
+        </div>
+        <form id="login-form">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" placeholder="Enter your username" required>
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Enter your password" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">
+            <i class="fas fa-sign-in-alt"></i> Sign In
+          </button>
+        </form>
+        <div id="login-error" class="error-message"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main App -->
+  <div id="app-screen" class="screen">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <i class="fas fa-qrcode"></i>
+        <span>RMC Tracker</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" data-page="dashboard">
+          <i class="fas fa-tachometer-alt"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="#" class="nav-item" data-page="scan">
+          <i class="fas fa-camera"></i>
+          <span>Scan QR</span>
+        </a>
+        <a href="#" class="nav-item" data-page="my-breaks">
+          <i class="fas fa-clock"></i>
+          <span>My Breaks</span>
+        </a>
+        <a href="#" class="nav-item admin-only" data-page="live-status">
+          <i class="fas fa-broadcast-tower"></i>
+          <span>Live Status</span>
+        </a>
+        <a href="#" class="nav-item admin-only" data-page="employees">
+          <i class="fas fa-users"></i>
+          <span>Employees</span>
+        </a>
+        <a href="#" class="nav-item admin-only" data-page="qrcodes">
+          <i class="fas fa-qrcode"></i>
+          <span>QR Codes</span>
+        </a>
+        <a href="#" class="nav-item admin-only" data-page="reports">
+          <i class="fas fa-chart-bar"></i>
+          <span>Reports</span>
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">
+            <i class="fas fa-user"></i>
+          </div>
+          <div class="user-details">
+            <span id="user-name">User</span>
+            <span id="user-role" class="user-role">Role</span>
+          </div>
+        </div>
+        <button id="logout-btn" class="btn btn-logout">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Header -->
+      <header class="top-header">
+        <h2 id="page-title">Dashboard</h2>
+        <div class="header-actions">
+          <div class="shift-badge" id="user-shift">
+            <i class="fas fa-sun"></i> Morning Shift
+          </div>
+        </div>
+      </header>
+
+      <!-- Dashboard Page -->
+      <div id="dashboard-page" class="page active">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon blue">
+              <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value" id="total-break-time">60</span>
+              <span class="stat-label">Total Break (min)</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value" id="used-break-time">0</span>
+              <span class="stat-label">Used (min)</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon orange">
+              <i class="fas fa-hourglass-half"></i>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value" id="remaining-break-time">60</span>
+              <span class="stat-label">Remaining (min)</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon purple">
+              <i class="fas fa-list-ol"></i>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value" id="breaks-taken">0/3</span>
+              <span class="stat-label">Breaks Taken</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fas fa-history"></i> Recent Breaks</h3>
+            </div>
+            <div class="card-body">
+              <div id="recent-breaks-list" class="breaks-list">
+                <p class="empty-state">No breaks recorded today</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fas fa-info-circle"></i> Quick Actions</h3>
+            </div>
+            <div class="card-body">
+              <div class="quick-actions">
+                <button class="action-btn" onclick="navigateTo('scan')">
+                  <i class="fas fa-camera"></i>
+                  <span>Scan QR to Start Break</span>
+                </button>
+                <button class="action-btn" onclick="navigateTo('my-breaks')">
+                  <i class="fas fa-list"></i>
+                  <span>View My Break History</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scan QR Page -->
+      <div id="scan-page" class="page">
+        <div class="scan-container">
+          <div class="card scan-card">
+            <div class="card-header">
+              <h3><i class="fas fa-camera"></i> Scan QR Code</h3>
+            </div>
+            <div class="card-body">
+              <div class="scan-simulation">
+                <div class="qr-scanner-frame">
+                  <i class="fas fa-qrcode scanner-icon"></i>
+                  <p>Point your camera at the QR code</p>
+                </div>
+                <div class="scan-input-section">
+                  <p class="scan-or">— OR —</p>
+                  <div class="form-group">
+                    <label>Enter QR Code ID</label>
+                    <input type="text" id="qr-code-input" placeholder="e.g., RMC-BREAK-AREA-01">
+                  </div>
+                  <button id="scan-btn" class="btn btn-primary btn-block">
+                    <i class="fas fa-play"></i> Start Break
+                  </button>
+                  <button id="end-break-btn" class="btn btn-danger btn-block" style="display:none;">
+                    <i class="fas fa-stop"></i> End Break
+                  </button>
+                </div>
+              </div>
+              <div id="scan-result" class="scan-result"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- My Breaks Page -->
+      <div id="my-breaks-page" class="page">
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-history"></i> My Break History</h3>
+          </div>
+          <div class="card-body">
+            <div class="break-summary">
+              <div class="summary-item">
+                <span class="summary-label">Total Break Time</span>
+                <span class="summary-value" id="my-total-time">60 min</span>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">Used</span>
+                <span class="summary-value" id="my-used-time">0 min</span>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">Remaining</span>
+                <span class="summary-value" id="my-remaining-time">60 min</span>
+              </div>
+            </div>
+            <div id="my-breaks-table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Break #</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Duration</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="my-breaks-tbody">
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Status Page -->
+      <div id="live-status-page" class="page">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon red">
+              <i class="fas fa-user-clock"></i>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value" id="live-on-break">0</span>
+              <span class="stat-label">On Break</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green">
+              <i class="fas fa-user-check"></i>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value" id="live-available">0</span>
+              <span class="stat-label">Available</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon orange">
+              <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value" id="live-exceeded">0</span>
+              <span class="stat-label">Exceeded</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fas fa-user-clock"></i> Currently On Break</h3>
+            </div>
+            <div class="card-body">
+              <div id="on-break-list" class="staff-list">
+                <p class="empty-state">No one is currently on break</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fas fa-user-check"></i> Available Staff</h3>
+            </div>
+            <div class="card-body">
+              <div id="available-list" class="staff-list">
+                <p class="empty-state">No available staff</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Employees Page -->
+      <div id="employees-page" class="page">
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-users"></i> Employee Management</h3>
+            <button class="btn btn-primary" onclick="showAddEmployeeModal()">
+              <i class="fas fa-plus"></i> Add Employee
+            </button>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Employee ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Designation</th>
+                    <th>Shift</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="employees-tbody">
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QR Codes Page -->
+      <div id="qrcodes-page" class="page">
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-qrcode"></i> QR Code Management</h3>
+            <button class="btn btn-primary" onclick="showAddQRModal()">
+              <i class="fas fa-plus"></i> Add QR Code
+            </button>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Code ID</th>
+                    <th>Location</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="qrcodes-tbody">
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reports Page -->
+      <div id="reports-page" class="page">
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-chart-bar"></i> Reports</h3>
+            <div class="report-filters">
+              <select id="report-type" class="form-select">
+                <option value="daily">Daily Report</option>
+                <option value="weekly">Weekly Report</option>
+                <option value="monthly">Monthly Report</option>
+              </select>
+              <input type="date" id="report-date" class="form-input">
+              <button class="btn btn-primary" onclick="generateReport()">
+                <i class="fas fa-sync"></i> Generate
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div id="report-content">
+              <div class="report-summary" id="report-summary"></div>
+              <div class="table-responsive">
+                <table class="data-table" id="report-table">
+                  <thead></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Add Employee Modal -->
+  <div id="add-employee-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3><i class="fas fa-user-plus"></i> Add New Employee</h3>
+        <button class="modal-close" onclick="closeModal('add-employee-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="add-employee-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Employee ID</label>
+              <input type="text" id="new-emp-id" required>
+            </div>
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" id="new-emp-name" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" id="new-emp-email" required>
+            </div>
+            <div class="form-group">
+              <label>Password</label>
+              <input type="password" id="new-emp-password" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Designation</label>
+              <select id="new-emp-designation" required>
+                <option value="Operator">Operator</option>
+                <option value="Team Leader">Team Leader</option>
+                <option value="Supervisor">Supervisor</option>
+                <option value="Coordinator">Coordinator</option>
+                <option value="Admin">Admin</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Shift</label>
+              <select id="new-emp-shift" required>
+                <option value="Morning">Morning</option>
+                <option value="Afternoon">Afternoon</option>
+                <option value="Night">Night</option>
+                <option value="Rotating">Rotating</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Max Break Time (min)</label>
+              <input type="number" id="new-emp-max-break" value="60" min="15" max="120">
+            </div>
+            <div class="form-group">
+              <label>Max Breaks Per Shift</label>
+              <input type="number" id="new-emp-max-breaks" value="3" min="1" max="5">
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Create Employee</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add QR Code Modal -->
+  <div id="add-qr-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3><i class="fas fa-qrcode"></i> Add New QR Code</h3>
+        <button class="modal-close" onclick="closeModal('add-qr-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="add-qr-form">
+          <div class="form-group">
+            <label>Location</label>
+            <input type="text" id="new-qr-location" placeholder="e.g., Main Break Room" required>
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="new-qr-description" rows="3"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Create QR Code</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast">
+    <i class="fas fa-check-circle"></i>
+    <span id="toast-message">Success!</span>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
