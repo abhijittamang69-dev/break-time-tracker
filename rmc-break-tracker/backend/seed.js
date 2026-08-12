@@ -16,14 +16,17 @@ const seedData = async () => {
     await QRCode.deleteMany({});
     console.log('Cleared existing data');
 
-    // Create admin user
     const salt = await bcrypt.genSalt(10);
-    const adminPassword = await bcrypt.hash('Admin@123', salt);
+
+    // Create admin user from env or use defaults
+    const adminUsername = process.env.ADMIN_USERNAME || 'administrator';
+    const adminPasswordRaw = process.env.ADMIN_PASSWORD || 'Admin@123';
+    const adminPassword = await bcrypt.hash(adminPasswordRaw, salt);
 
     const admin = new User({
       employeeId: 'ADMIN001',
       name: 'Administrator',
-      username: 'administrator',
+      username: adminUsername,
       password: adminPassword,
       designation: 'Admin',
       shift: 'Morning'
@@ -87,9 +90,7 @@ const seedData = async () => {
     console.log('Sample QR codes created');
 
     console.log('\nSeed data created successfully!');
-    console.log('\nAdmin Login:');
-    console.log('Username: administrator');
-    console.log('Password: Admin@123');
+    console.log(`\nAdmin Login: Username: ${adminUsername}, Password: ${adminPasswordRaw}`);
     console.log('\nOperator Logins (password: password123):');
     operators.forEach(op => console.log(`  ${op.employeeId}: ${op.email.split('@')[0]}`));
 
