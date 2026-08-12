@@ -25,8 +25,6 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
-app.use(cors());
-app.use(express.json());
 
 // Serve static files from frontend
 app.use(express.static(path.join(__dirname, '../frontend')));

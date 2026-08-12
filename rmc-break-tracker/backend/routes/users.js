@@ -98,48 +98,6 @@ router.post('/', auth, authorize('Admin'), [
     res.status(500).json({ message: 'Server error' });
   }
 });
-  body('employeeId').notEmpty().trim(),
-  body('name').notEmpty().trim(),
-  body('username').notEmpty().trim().toLowerCase(),
-  body('password').isLength({ min: 6 }),
-  body('designation').isIn(['Admin', 'Coordinator', 'Supervisor', 'Team Leader', 'Operator']),
-  body('shift').isIn(['Morning', 'Afternoon', 'Night', 'Rotating'])
-], async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    const { employeeId, name, username, password, designation, shift, department, maxBreakTime, maxBreaksPerShift } = req.body;
-
-    let user = await User.findOne({ $or: [{ username }, { employeeId }] });
-    if (user) {
-      return res.status(400).json({ message: 'User already exists' });
-    }
-
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    user = new User({
-      employeeId,
-      name,
-      username,
-      password: hashedPassword,
-      designation,
-      shift,
-      department: department || 'RMC',
-      maxBreakTime: maxBreakTime || 60,
-      maxBreaksPerShift: maxBreaksPerShift || 3
-    });
-
-    await user.save();
-    res.status(201).json({ message: 'User created successfully', user: { ...user._doc, password: undefined } });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
 
 // @route   PUT /api/users/:id
 // @desc    Update user
