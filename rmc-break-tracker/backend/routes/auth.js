@@ -41,6 +41,17 @@ router.post('/login', [
       return res.status(400).json({ message: 'Invalid credentials - wrong password' });
     }
 
+    if (!process.env.JWT_SECRET) {
+      console.error('[LOGIN] JWT_SECRET is not set!');
+      return res.status(500).json({ message: 'Server config error: JWT_SECRET missing' });
+    }
+
+    const token = jwt.sign(
+    console.log('[LOGIN] Password match:', isMatch);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Invalid credentials - wrong password' });
+    }
+
     const token = jwt.sign(
       { id: user._id },
       process.env.JWT_SECRET,

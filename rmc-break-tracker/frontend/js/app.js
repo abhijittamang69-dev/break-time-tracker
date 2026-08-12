@@ -71,6 +71,25 @@ async function handleLogin(e) {
   const username = document.getElementById('username').value;
   const password = document.getElementById('password').value;
   try {
+    console.log('[LOGIN] Sending request...');
+    const data = await api('/auth/login', { method: 'POST', body: { username, password } });
+    console.log('[LOGIN] Response:', data);
+    authToken = data.token;
+    currentUser = data.user;
+    localStorage.setItem('rmc_token', authToken);
+    showScreen('app-screen');
+    initializeApp();
+    showToast('Welcome back, ' + data.user.name);
+  } catch (error) {
+    console.error('[LOGIN] Error:', error.message);
+    document.getElementById('login-error').textContent = error.message;
+    document.getElementById('login-error').classList.add('show');
+  }
+}
+  e.preventDefault();
+  const username = document.getElementById('username').value;
+  const password = document.getElementById('password').value;
+  try {
     const data = await api('/auth/login', { method: 'POST', body: { username, password } });
     authToken = data.token;
     currentUser = data.user;
