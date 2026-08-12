@@ -334,6 +334,27 @@ async function handleAddEmployee(e) {
   const body = {
     employeeId: document.getElementById('new-emp-id').value,
     name: document.getElementById('new-emp-name').value,
+    username: document.getElementById('new-emp-email').value,
+    password: document.getElementById('new-emp-password').value,
+    designation: document.getElementById('new-emp-designation').value,
+    shift: document.getElementById('new-emp-shift').value,
+    maxBreakTime: parseInt(document.getElementById('new-emp-max-break').value),
+    maxBreaksPerShift: parseInt(document.getElementById('new-emp-max-breaks').value)
+  };
+  try {
+    await api('/users', { method: 'POST', body });
+    closeModal('add-employee-modal');
+    document.getElementById('add-employee-form').reset();
+    loadEmployees();
+    showToast('Employee created successfully');
+  } catch (error) {
+    console.error('Add employee error:', error);
+  }
+}
+  e.preventDefault();
+  const body = {
+    employeeId: document.getElementById('new-emp-id').value,
+    name: document.getElementById('new-emp-name').value,
     email: document.getElementById('new-emp-email').value,
     password: document.getElementById('new-emp-password').value,
     designation: document.getElementById('new-emp-designation').value,
