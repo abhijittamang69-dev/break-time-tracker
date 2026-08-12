@@ -60,7 +60,9 @@ router.post('/login', [
         name: user.name,
         username: user.username,
         designation: user.designation,
-        shift: user.shift
+        shift: user.shift,
+        maxBreakTime: user.maxBreakTime,
+        maxBreaksPerShift: user.maxBreaksPerShift
       }
     });
   } catch (error) {
