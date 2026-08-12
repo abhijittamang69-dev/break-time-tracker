@@ -38,6 +38,12 @@
 
   <!-- Main App -->
   <div id="app-screen" class="screen">
+    <!-- Mobile Sidebar Overlay -->
+    <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+  <div id="app-screen" class="screen">
     <!-- Sidebar -->
     <aside class="sidebar">
       <div class="sidebar-header">
@@ -94,6 +100,10 @@
     <main class="main-content">
       <!-- Header -->
       <header class="top-header">
+        <button class="menu-toggle" id="menu-toggle" onclick="toggleSidebar()">
+          <i class="fas fa-bars"></i>
+        </button>
+        <h2 id="page-title">Dashboard</h2>="top-header">
         <h2 id="page-title">Dashboard</h2>
         <div class="header-actions">
           <div class="shift-badge" id="user-shift">

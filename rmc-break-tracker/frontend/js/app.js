@@ -22,6 +22,10 @@ function setupEventListeners() {
     item.addEventListener('click', (e) => {
       e.preventDefault();
       navigateTo(item.dataset.page);
+      // Close sidebar on mobile after navigation
+      if (window.innerWidth <= 768) {
+        toggleSidebar();
+      }
     });
   });
 
@@ -351,27 +355,6 @@ async function handleAddEmployee(e) {
     console.error('Add employee error:', error);
   }
 }
-  e.preventDefault();
-  const body = {
-    employeeId: document.getElementById('new-emp-id').value,
-    name: document.getElementById('new-emp-name').value,
-    email: document.getElementById('new-emp-email').value,
-    password: document.getElementById('new-emp-password').value,
-    designation: document.getElementById('new-emp-designation').value,
-    shift: document.getElementById('new-emp-shift').value,
-    maxBreakTime: parseInt(document.getElementById('new-emp-max-break').value),
-    maxBreaksPerShift: parseInt(document.getElementById('new-emp-max-breaks').value)
-  };
-  try {
-    await api('/users', { method: 'POST', body });
-    closeModal('add-employee-modal');
-    document.getElementById('add-employee-form').reset();
-    loadEmployees();
-    showToast('Employee created successfully');
-  } catch (error) {
-    console.error('Add employee error:', error);
-  }
-}
 
 async function deleteEmployee(id) {
   if (!confirm('Are you sure you want to deactivate this employee?')) return;
@@ -504,6 +487,13 @@ async function generateReport() {
 function showAddEmployeeModal() { document.getElementById('add-employee-modal').classList.add('show'); }
 function showAddQRModal() { document.getElementById('add-qr-modal').classList.add('show'); }
 function closeModal(modalId) { document.getElementById(modalId).classList.remove('show'); }
+
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('show');
+}
 
 function formatTime(dateStr) {
   const date = new Date(dateStr);
