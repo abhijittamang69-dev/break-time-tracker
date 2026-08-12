@@ -22,7 +22,6 @@ function setupEventListeners() {
     item.addEventListener('click', (e) => {
       e.preventDefault();
       navigateTo(item.dataset.page);
-      // Close sidebar on mobile after navigation
       if (window.innerWidth <= 768) {
         toggleSidebar();
       }
@@ -55,11 +54,6 @@ async function api(endpoint, options = {}) {
       throw new Error(errorMsg);
     }
     return data;
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.message || 'Something went wrong');
-    }
-    return data;
   } catch (error) {
     showToast(error.message, 'error');
     throw error;
@@ -82,22 +76,6 @@ async function handleLogin(e) {
     showToast('Welcome back, ' + data.user.name);
   } catch (error) {
     console.error('[LOGIN] Error:', error.message);
-    document.getElementById('login-error').textContent = error.message;
-    document.getElementById('login-error').classList.add('show');
-  }
-}
-  e.preventDefault();
-  const username = document.getElementById('username').value;
-  const password = document.getElementById('password').value;
-  try {
-    const data = await api('/auth/login', { method: 'POST', body: { username, password } });
-    authToken = data.token;
-    currentUser = data.user;
-    localStorage.setItem('rmc_token', authToken);
-    showScreen('app-screen');
-    initializeApp();
-    showToast('Welcome back, ' + data.user.name);
-  } catch (error) {
     document.getElementById('login-error').textContent = error.message;
     document.getElementById('login-error').classList.add('show');
   }
