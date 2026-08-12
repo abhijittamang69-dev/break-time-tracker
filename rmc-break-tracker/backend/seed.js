@@ -19,7 +19,7 @@ const seedData = async () => {
     const salt = await bcrypt.genSalt(10);
 
     // Create admin user from env or use defaults
-    const adminUsername = process.env.ADMIN_USERNAME || 'administrator';
+    const adminUsername = (process.env.ADMIN_USERNAME || 'administrator').toLowerCase();
     const adminPasswordRaw = process.env.ADMIN_PASSWORD || 'Admin@123';
     const adminPassword = await bcrypt.hash(adminPasswordRaw, salt);
 
