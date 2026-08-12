@@ -51,6 +51,12 @@ async function api(endpoint, options = {}) {
     const response = await fetch(url, config);
     const data = await response.json();
     if (!response.ok) {
+      const errorMsg = data.message || (data.errors && data.errors.map(e => e.msg).join(', ')) || 'Something went wrong';
+      throw new Error(errorMsg);
+    }
+    return data;
+    const data = await response.json();
+    if (!response.ok) {
       throw new Error(data.message || 'Something went wrong');
     }
     return data;
