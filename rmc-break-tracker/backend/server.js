@@ -13,6 +13,18 @@ dotenv.config();
 const app = express();
 
 // Middleware
+const allowedOrigins = ['https://break-time-tracker.vercel.app', 'https://break-time-tracker.onrender.com', 'http://localhost:5000'];
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
+app.use(express.json());
 app.use(cors());
 app.use(express.json());
 
